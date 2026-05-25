@@ -2,7 +2,7 @@
 
 Static review site for Web3 wallets, built with Astro and ready for GitHub Pages.
 
-**Default URL**: `https://greydgl.github.io/Web3WalletReview/`
+**Default URL**: `https://victomteng1997.github.io/Web3WalletReview/`
 
 ## Local development
 
@@ -28,7 +28,7 @@ Push this project to a GitHub repository named `Web3WalletReview` and enable Git
 Default deploy target:
 
 ```js
-const SITE_URL = 'https://greydgl.github.io';
+const SITE_URL = 'https://victomteng1997.github.io';
 const BASE_PATH = '/Web3WalletReview';
 ```
 

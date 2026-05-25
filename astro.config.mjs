@@ -7,7 +7,7 @@ import rehypeExternalLinks from 'rehype-external-links';
 // Deploy target. Defaults to GitHub Pages project-page hosting.
 // Override SITE_URL and BASE_PATH at build time if this repository is renamed
 // or moved to a custom domain.
-const SITE_URL = process.env.SITE_URL ?? 'https://greydgl.github.io';
+const SITE_URL = process.env.SITE_URL ?? 'https://victomteng1997.github.io';
 const BASE_PATH = process.env.BASE_PATH ?? '/Web3WalletReview';
 
 export default defineConfig({
