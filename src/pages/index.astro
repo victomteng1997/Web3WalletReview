@@ -1,0 +1,136 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SchemaOrg from '../components/SchemaOrg.astro';
+import ReviewCard from '../components/ReviewCard.astro';
+import { readingTime } from '../lib/reading-time';
+import { SITE } from '../lib/site';
+import { link } from '../lib/path';
+
+const all = await getCollection('reviews', ({ data }) => !data.draft);
+const sorted = all.sort(
+  (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
+);
+
+const featured = sorted[0];
+const rest = sorted.slice(1, 6);
+---
+
+<BaseLayout
+  title={SITE.title}
+  description={SITE.description}
+  type="website"
+>
+  <SchemaOrg slot="head" type="website" />
+
+  <section class="hero container-narrow">
+    <p class="eyebrow">{SITE.title}</p>
+    <h1 class="hero__headline">
+      {SITE.tagline}
+    </h1>
+    <p class="hero__lede">
+      {SITE.description}
+    </p>
+  </section>
+
+  <section class="latest container">
+    {featured && (
+      <ReviewCard
+        featured
+        href={link(`/reviews/${featured.id}`)}
+        title={featured.data.title}
+        description={featured.data.description}
+        publishDate={featured.data.publishDate}
+        readingTime={readingTime(featured.body ?? '')}
+        rating={featured.data.rating}
+        productCategory={featured.data.productCategory}
+      />
+    )}
+
+    {rest.length > 0 && (
+      <div class="latest__list">
+        <p class="eyebrow latest__heading">More reviews</p>
+        {rest.map((entry) => (
+          <ReviewCard
+            href={link(`/reviews/${entry.id}`)}
+            title={entry.data.title}
+            description={entry.data.description}
+            publishDate={entry.data.publishDate}
+            readingTime={readingTime(entry.body ?? '')}
+            rating={entry.data.rating}
+            productCategory={entry.data.productCategory}
+          />
+        ))}
+      </div>
+    )}
+
+    {sorted.length === 0 && (
+      <p class="latest__empty">
+        First review coming soon. <a href={link('/about')}>About this site →</a>
+      </p>
+    )}
+
+    {sorted.length > 6 && (
+      <p class="latest__more">
+        <a href={link('/reviews')}>See all reviews →</a>
+      </p>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .hero .eyebrow {
+    margin-bottom: var(--space-4);
+  }
+
+  .hero__headline {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 4.5vw + 0.5rem, 4rem);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: 0;
+    margin: 0 0 var(--space-4) 0;
+    max-width: 18ch;
+  }
+
+  .hero__lede {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--color-ink-soft);
+    line-height: 1.5;
+    max-width: 36em;
+  }
+
+  .latest {
+    padding-bottom: var(--space-8);
+  }
+
+  .latest__list {
+    margin-top: var(--space-7);
+  }
+
+  .latest__heading {
+    margin-bottom: var(--space-4);
+  }
+
+  .latest__empty {
+    color: var(--color-ink-soft);
+  }
+
+  .latest__more {
+    margin-top: var(--space-5);
+  }
+
+  .latest__more a {
+    font-family: var(--font-body);
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-accent);
+    padding-bottom: 1px;
+  }
+</style>

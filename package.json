@@ -1,0 +1,23 @@
+{
+  "name": "web3-wallet-review",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.0.0",
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/rss": "^4.0.0",
+    "@astrojs/sitemap": "^3.2.0",
+    "@fontsource-variable/fraunces": "^5.1.0",
+    "@fontsource-variable/inter": "^5.1.0",
+    "rehype-external-links": "^3.0.0",
+    "remark-toc": "^9.0.0"
+  }
+}

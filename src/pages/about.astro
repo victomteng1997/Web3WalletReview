@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SchemaOrg from '../components/SchemaOrg.astro';
+import { SITE } from '../lib/site';
+import { link } from '../lib/path';
+---
+
+<BaseLayout
+  title="About"
+  description={`About ${SITE.title}, its review methodology, and disclosures.`}
+  type="website"
+>
+  <SchemaOrg slot="head" type="person" />
+
+  <article class="about container-narrow">
+    <header>
+      <p class="eyebrow">About</p>
+      <h1 class="about__title">About {SITE.title}</h1>
+      <p class="about__lede">
+        {SITE.title} publishes independent reviews for Web3 wallets, with a focus
+        on useful comparison criteria, official source links, and clear risk notes.
+      </p>
+    </header>
+
+    <section>
+      <h2>Editorial Scope</h2>
+      <p>
+        This site is built for review and comparison articles covering Web3 wallets.
+        Each article starts from public product pages and should be expanded with
+        current pricing, screenshots, regional notes, and hands-on testing before
+        being treated as a final buyer guide.
+      </p>
+    </section>
+
+    <section>
+      <h2>Methodology</h2>
+      <p>Every review follows the same checklist:</p>
+      <ul>
+        <li><strong>Product fit</strong> - who the platform is actually for.</li>
+        <li><strong>Costs</strong> - fees, spreads, subscriptions, network costs, and hidden friction.</li>
+        <li><strong>Security</strong> - custody model, account controls, smart contract exposure, and disclosed safeguards.</li>
+        <li><strong>Transparency</strong> - official documentation, risk disclosures, audits, reports, or reserve pages when relevant.</li>
+        <li><strong>Workflow</strong> - onboarding, daily use, exports, support, and practical UX tradeoffs.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Disclosures</h2>
+      <p>
+        Reviews are informational and are not financial, legal, tax, or investment
+        advice. Crypto and Web3 products can involve loss of funds, smart contract
+        failure, custody risk, liquidation, tax complexity, and regional restrictions.
+      </p>
+    </section>
+
+    <section>
+      <h2>Contact</h2>
+      <p>
+        Reach me at <a href={`mailto:${SITE.author.email}`}>{SITE.author.email}</a>.
+        Subscribe via <a href={link('/rss.xml')}>RSS</a> or
+        <a href={link('/feed.json')}>JSON feed</a>.
+      </p>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .about {
+    padding-block: var(--space-7) var(--space-8);
+  }
+
+  .about header {
+    margin-bottom: var(--space-7);
+  }
+
+  .about .eyebrow {
+    margin-bottom: var(--space-3);
+  }
+
+  .about__title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    margin: 0 0 var(--space-4) 0;
+  }
+
+  .about__lede {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--color-ink-soft);
+    line-height: 1.45;
+    max-width: 36em;
+  }
+
+  .about section + section {
+    margin-top: var(--space-6);
+  }
+
+  .about h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0 0 var(--space-3) 0;
+  }
+
+  .about p + p,
+  .about p + ul {
+    margin-top: var(--space-3);
+  }
+
+  .about ul {
+    padding-left: 1.25em;
+  }
+
+  .about li + li {
+    margin-top: var(--space-2);
+  }
+</style>

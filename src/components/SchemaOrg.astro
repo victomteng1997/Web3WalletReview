@@ -1,0 +1,155 @@
+---
+import { SITE } from '../lib/site';
+import { absoluteUrl } from '../lib/path';
+
+type WebsiteProps = {
+  type: 'website';
+};
+
+type PersonProps = {
+  type: 'person';
+};
+
+type ListEntry = {
+  position: number;
+  name: string;
+  url?: string;
+  score?: number;
+  summary?: string;
+};
+
+type ReviewProps = {
+  type: 'review';
+  title: string;
+  description: string;
+  url: string;
+  image?: string;
+  publishDate: Date;
+  updatedDate?: Date;
+  author: string;
+  productName?: string;
+  productCategory: string;
+  productUrl?: string;
+  rating?: number;
+  itemList?: ListEntry[];
+};
+
+type Props = WebsiteProps | PersonProps | ReviewProps;
+
+const props = Astro.props as Props;
+
+const homeUrl = absoluteUrl('/', SITE.url);
+const authorUrl = absoluteUrl(SITE.author.aboutPath, SITE.url);
+
+const authorPerson = {
+  '@type': 'Person',
+  name: SITE.author.name,
+  url: authorUrl,
+  ...(SITE.author.sameAs.length > 0 ? { sameAs: SITE.author.sameAs } : {}),
+};
+
+let jsonLd: Record<string, unknown> | Record<string, unknown>[] = {};
+
+if (props.type === 'website') {
+  jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE.title,
+    url: homeUrl,
+    description: SITE.description,
+    publisher: authorPerson,
+    inLanguage: 'en-US',
+  };
+} else if (props.type === 'person') {
+  jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: SITE.author.name,
+    url: authorUrl,
+    ...(SITE.author.sameAs.length > 0 ? { sameAs: SITE.author.sameAs } : {}),
+  };
+} else {
+  // props.url is already base-prefixed when passed in from [...slug].astro.
+  const reviewURL = new URL(props.url, SITE.url).toString();
+  const reviewImage = props.image
+    ? new URL(props.image, SITE.url).toString()
+    : absoluteUrl(SITE.defaultOgImage, SITE.url);
+
+  const articleNode: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: props.title,
+    description: props.description,
+    image: reviewImage,
+    datePublished: props.publishDate.toISOString(),
+    ...(props.updatedDate
+      ? { dateModified: props.updatedDate.toISOString() }
+      : {}),
+    author: authorPerson,
+    publisher: {
+      '@type': 'Organization',
+      name: SITE.title,
+      url: homeUrl,
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': reviewURL,
+    },
+    articleSection: props.productCategory,
+  };
+
+  if (props.itemList && props.itemList.length > 0) {
+    articleNode['@type'] = ['Article', 'ItemList'];
+    articleNode.itemListOrder = 'https://schema.org/ItemListOrderDescending';
+    articleNode.numberOfItems = props.itemList.length;
+    articleNode.itemListElement = props.itemList
+      .slice()
+      .sort((a, b) => a.position - b.position)
+      .map((item) => ({
+        '@type': 'ListItem',
+        position: item.position,
+        item: {
+          '@type': 'Organization',
+          name: item.name,
+          ...(item.url ? { url: item.url } : {}),
+          ...(item.summary ? { description: item.summary } : {}),
+        },
+      }));
+  } else if (props.productName) {
+    const reviewNode: Record<string, unknown> = {
+      '@type': 'Review',
+      itemReviewed: {
+        '@type': 'Product',
+        name: props.productName,
+        category: props.productCategory,
+        ...(props.productUrl ? { url: props.productUrl } : {}),
+      },
+      author: authorPerson,
+      name: props.title,
+      reviewBody: props.description,
+      datePublished: props.publishDate.toISOString(),
+      ...(props.updatedDate
+        ? { dateModified: props.updatedDate.toISOString() }
+        : {}),
+    };
+
+    if (typeof props.rating === 'number') {
+      reviewNode.reviewRating = {
+        '@type': 'Rating',
+        ratingValue: props.rating,
+        bestRating: 10,
+        worstRating: 0,
+      };
+    }
+
+    articleNode.review = reviewNode;
+  }
+
+  jsonLd = articleNode;
+}
+---
+
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify(jsonLd)}
+/>

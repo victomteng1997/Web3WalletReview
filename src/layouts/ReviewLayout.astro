@@ -1,0 +1,173 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import SchemaOrg from '../components/SchemaOrg.astro';
+import Byline from '../components/Byline.astro';
+import Prose from '../components/Prose.astro';
+import { readingTime } from '../lib/reading-time';
+import { SITE } from '../lib/site';
+import { link } from '../lib/path';
+
+type ListEntry = {
+  position: number;
+  name: string;
+  url?: string;
+  score?: number;
+  summary?: string;
+};
+
+type Props = {
+  entry: {
+    data: {
+      title: string;
+      description: string;
+      publishDate: Date;
+      updatedDate?: Date;
+      author: string;
+      heroImage?: string;
+      heroAlt?: string;
+      productName?: string;
+      productCategory: string;
+      productUrl?: string;
+      rating?: number;
+      tags?: string[];
+      itemList?: ListEntry[];
+      sourceUrl?: string;
+    };
+    body?: string;
+  };
+  url: string;
+};
+
+const { entry, url } = Astro.props;
+const d = entry.data;
+const rt = readingTime(entry.body ?? '');
+---
+
+<BaseLayout
+  title={d.title}
+  description={d.description}
+  image={d.heroImage}
+  type="article"
+  publishedTime={d.publishDate}
+  modifiedTime={d.updatedDate}
+  author={d.author}
+>
+  <SchemaOrg
+    slot="head"
+    type="review"
+    title={d.title}
+    description={d.description}
+    url={url}
+    image={d.heroImage}
+    publishDate={d.publishDate}
+    updatedDate={d.updatedDate}
+    author={d.author}
+    productName={d.productName}
+    productCategory={d.productCategory}
+    productUrl={d.productUrl}
+    rating={d.rating}
+    itemList={d.itemList}
+  />
+
+  <article class="review">
+    <header class="review__header container-narrow">
+      <p class="eyebrow">{d.productCategory} · Review</p>
+      <h1 class="review__title">{d.title}</h1>
+      <p class="review__dek">{d.description}</p>
+      <Byline author={d.author} publishDate={d.publishDate} readingTime={rt} />
+    </header>
+
+    {d.heroImage && (
+      <figure class="review__hero">
+        <img src={d.heroImage} alt={d.heroAlt ?? d.productName ?? d.title} loading="eager" />
+      </figure>
+    )}
+
+    <div class="review__body container-narrow">
+      <Prose>
+        <slot />
+      </Prose>
+    </div>
+
+    <footer class="review__footer container-narrow">
+      <hr />
+      <section class="review__methodology">
+        <p class="eyebrow">Methodology</p>
+        <p>
+          Reviews on {SITE.title} are independent and disclose how the product
+          was tested. See the <a href={link('/about')}>about page</a> for full methodology
+          and disclosures.
+        </p>
+      </section>
+
+      <section class="review__author">
+        <p class="eyebrow">About the author</p>
+        <p>
+          <strong>{d.author}</strong> writes hands-on reviews at {SITE.title}.
+          <a href={link('/about')}>More about the author →</a>
+        </p>
+      </section>
+
+      <section class="review__more">
+        <p class="eyebrow">More reviews</p>
+        <p><a href={link('/reviews')}>Browse all reviews →</a></p>
+      </section>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .review {
+    padding-block: var(--space-7);
+  }
+
+  .review__header {
+    text-align: left;
+    margin-bottom: var(--space-6);
+  }
+
+  .review__header .eyebrow {
+    margin-bottom: var(--space-3);
+  }
+
+  .review__title {
+    font-family: var(--font-display);
+    margin: 0 0 var(--space-4) 0;
+    font-weight: 500;
+  }
+
+  .review__dek {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-style: italic;
+    color: var(--color-ink-soft);
+    line-height: 1.4;
+    margin: 0 0 var(--space-5) 0;
+    max-width: 38rem;
+  }
+
+  .review__hero {
+    margin: var(--space-6) 0 var(--space-7) 0;
+    max-width: var(--measure-wide);
+    margin-inline: auto;
+    padding-inline: var(--space-5);
+  }
+
+  .review__hero img {
+    border-radius: 4px;
+    width: 100%;
+    height: auto;
+  }
+
+  .review__footer {
+    margin-top: var(--space-8);
+  }
+
+  .review__footer section + section {
+    margin-top: var(--space-5);
+  }
+
+  .review__footer .eyebrow {
+    margin-bottom: var(--space-2);
+  }
+</style>

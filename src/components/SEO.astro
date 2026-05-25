@@ -1,0 +1,66 @@
+---
+import { SITE } from '../lib/site';
+import { absoluteUrl } from '../lib/path';
+
+type Props = {
+  title: string;
+  description?: string;
+  canonical?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  author?: string;
+};
+
+const {
+  title,
+  description = SITE.description,
+  canonical,
+  image,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+  author,
+} = Astro.props;
+
+const fullTitle =
+  title === SITE.title ? title : `${title} — ${SITE.title}`;
+
+// Astro.url.pathname already includes the configured base path,
+// so building the canonical URL with new URL() against the site origin works.
+const canonicalURL = canonical
+  ? new URL(canonical, SITE.url).toString()
+  : new URL(Astro.url.pathname, SITE.url).toString();
+
+const ogImage = image
+  ? new URL(image, SITE.url).toString()
+  : absoluteUrl(SITE.defaultOgImage, SITE.url);
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE.title} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:locale" content={SITE.locale} />
+
+{type === 'article' && publishedTime && (
+  <meta property="article:published_time" content={publishedTime.toISOString()} />
+)}
+{type === 'article' && modifiedTime && (
+  <meta property="article:modified_time" content={modifiedTime.toISOString()} />
+)}
+{type === 'article' && author && (
+  <meta property="article:author" content={author} />
+)}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />

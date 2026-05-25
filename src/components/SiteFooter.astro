@@ -1,0 +1,83 @@
+---
+import { SITE } from '../lib/site';
+import { link } from '../lib/path';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <div>
+      <p class="site-footer__brand">{SITE.title}</p>
+      <p class="site-footer__tagline">{SITE.tagline}</p>
+    </div>
+    <nav aria-label="Footer">
+      <ul>
+        <li><a href={link('/about')}>About &amp; methodology</a></li>
+        <li><a href={link('/reviews')}>All reviews</a></li>
+        <li><a href={link('/rss.xml')}>RSS</a></li>
+        <li><a href={link('/feed.json')}>JSON feed</a></li>
+      </ul>
+    </nav>
+    <div class="site-footer__meta">
+      <p>© {year} {SITE.author.name}</p>
+      <p>All reviews are independent. Methodology disclosed on every post.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-9);
+    border-top: 1px solid var(--color-rule);
+    padding-block: var(--space-7);
+    color: var(--color-ink-soft);
+    font-size: 0.92rem;
+  }
+
+  .site-footer__inner {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1.4fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  .site-footer__brand {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--color-ink);
+    margin-bottom: var(--space-2);
+  }
+
+  .site-footer__tagline {
+    color: var(--color-ink-muted);
+    font-size: 0.92rem;
+    max-width: 24em;
+  }
+
+  .site-footer nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .site-footer nav li + li {
+    margin-top: var(--space-2);
+  }
+  .site-footer nav a {
+    color: var(--color-ink-soft);
+    text-decoration: none;
+  }
+  .site-footer nav a:hover {
+    color: var(--color-accent);
+  }
+
+  .site-footer__meta p + p {
+    margin-top: var(--space-2);
+  }
+
+  @media (max-width: 720px) {
+    .site-footer__inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+  }
+</style>
